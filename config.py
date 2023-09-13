@@ -1,4 +1,4 @@
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = ""
 VERBOSE = True
 REDIS_URL = "redis://@localhost:6380"
 INDEX_NAME = "database-index"
