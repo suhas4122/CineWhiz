@@ -3,14 +3,14 @@ from langchain.vectorstores import VectorStore
 from langchain.vectorstores.redis import Redis
 from langchain.embeddings.openai import OpenAIEmbeddings
 from typing import List,Dict, Tuple
-# import logging
+import logging
 from enum import Enum
 from abc import ABC, abstractmethod
 from sqlalchemy.orm import Session
-# from .. import logger
 from langchain.storage import LocalFileStore, RedisStore
 from langchain.embeddings import OpenAIEmbeddings, CacheBackedEmbeddings
 import pprint
+from sqlalchemy.sql import text
 
 class OrderBy(Enum):
     RATING = "rating_value"
@@ -79,7 +79,7 @@ class SearchEngine():
         vectorstore: Redis,
         session: Session,
         max_documents: int = 100,
-        similarity_thresh: float = 0.45
+        similarity_thresh: float = SIMILARITY_THRESH
     ) -> None:
         """
         Arguments:
@@ -147,7 +147,7 @@ SELECT * FROM Movie"""
         search_term: str,
         order_by: OrderBy = OrderBy.RATING,
         order: Order = Order.DESC,
-        limit: int = 5,
+        limit: int = MAX_DOCUMENTS,
         filters: List[Filter] = []
     ) -> List[Dict]:
         """
@@ -167,7 +167,7 @@ SELECT * FROM Movie"""
             retriever.score_threshold = self.similarity_thresh
             results = retriever.get_relevant_documents(search_term)
             uuids = [result.metadata["uuid"] for result in results]
-        # logging.debug("Search in vectorstore complete")
+        logging.debug("Search in vectorstore complete")
         
         query = self._construct_search_query(
             uuids=uuids,
@@ -176,10 +176,11 @@ SELECT * FROM Movie"""
             limit=limit,
             filters=filters,
         )
-        # logging.debug(f"Search Query: {query}")
+        print(f"Search Query: {query}")
+        # exit()
         try:
 
-            resp = self.session.execute(query)
+            resp = self.session.execute(text(query))
             movies: List = resp.fetchall()
         except Exception as e:
             # logging.error(f"Error while executing query {query}: {e}")

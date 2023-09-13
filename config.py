@@ -1,8 +1,8 @@
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 VERBOSE = True
 REDIS_URL = "redis://@localhost:6380"
 INDEX_NAME = "database-index"
-BASE_PATH = "./movie-recommender"
+BASE_PATH = "./application"
 
 REDIS_EMBEDDING_PATH = f"{BASE_PATH}/data/embeddings/"
 LANGCHAIN_CACHE_SQLITE_PATH = f"{BASE_PATH}/data/cache/.langchain.db"
